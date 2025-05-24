@@ -1,0 +1,41 @@
+pipeline{
+    agent any 
+    stages {
+        stage('checkout scm'){
+            steps{
+                echo "checking out from branch ${env.BRANCH_NAME}"
+                checkout scm
+            }
+        }
+        stage('build'){
+            steps{
+                echo "building the code"
+                sh 'mvn clean package'
+            }      
+        }
+        stage('deploy'){
+            steps{
+                script{
+                    if (env.BRANCH_NAME == 'dev'){
+                        echo "deploying to dev environment"
+                        // sh 'deploy-dev.sh'
+                    } else if (env.BRANCH_NAME == 'qa'){
+                        echo "deploying to qa environment"
+                        // sh 'deploy-qa.sh'
+                    } else if (env.BRANCH_NAME == 'master'){
+                        echo "deploying to prod environment"
+                        // sh 'deploy-prod.sh'
+                    } else {
+                        echo "No deployment script found for any branch"
+                    }
+                }
+            }
+        }
+        stage('test'){
+            steps{
+                echo "running tests"
+                //sh 'run-tests.sh'
+            }
+        }
+    }
+}
